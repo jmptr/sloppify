@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "bin": {
-    "jute": "./dist/index.js"
+    "sloppify": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -16,8 +16,7 @@
     "prebuild": "rimraf dist",
     "build": "rollup -c",
     "dev": "rollup -c --watch",
-    "test": "jest",
-    "graphql:codegen": "graphql codegen"
+    "test": "jest"
   },
   "dependencies": {
     "@shopify/shopify-api": "^2.0.0",
@@ -28,6 +27,7 @@
   "peerDependencies": {
     "@shopify/shopify-api": "^2.0.0",
     "dotenv": "^10.0.0",
+    "graphql": "^16.2.0",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
