@@ -1,0 +1,19 @@
+query Firstfiles {
+  files(first: 3) {
+    edges {
+      node {
+        alt
+        createdAt
+        fileStatus
+        preview {
+          image {
+            altText
+            width
+            height
+          }
+          status
+        }
+      }
+    }
+  }
+}
