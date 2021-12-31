@@ -17,11 +17,13 @@ export const createGraphqlClient = (options: CreateClientOptions) => {
   const client = createClient({
     url,
     fetch,
-    fetchOptions: {
-      headers,
-    },
-    requestPolicy: 'network-only',
-    exchanges: defaultExchanges,
+    // fetchOptions: {
+    //   headers,
+    // },
+    // requestPolicy: 'network-only',
+    // exchanges: defaultExchanges,
+    // suspense: false,
+    // maskTypename: false,
   });
 
   return client;

@@ -2,6 +2,7 @@ import yargs from 'yargs';
 import dotenv from 'dotenv';
 import * as buildCommands from './commands/build';
 import * as filesListCommands from './commands/files-list';
+import * as gCommands from './commands/g';
 import path from 'path';
 
 dotenv.config({
@@ -14,5 +15,6 @@ yargs
   .showHelpOnFail(true, 'Specify --help for available options')
   .command({ ...buildCommands })
   .command({ ...filesListCommands })
+  .command({ ...gCommands })
   .env('SHOPIFY')
   .help().argv;

@@ -1,9 +1,9 @@
 import { ArgumentsCamelCase } from 'yargs';
 
-import { createGraphqlClient } from '../../lib/create-urql-client';
+import Graphql from '../../lib/shopify-graphql-node';
 import filesList from '../queries/files-list.graphql';
 
-export const command = 'files-list';
+export const command = 'g';
 
 export const describe = 'List the files';
 
@@ -27,11 +27,13 @@ export interface BuildCommandArgs {
 
 export const handler = async (args: ArgumentsCamelCase<BuildCommandArgs>) => {
   const { shop, accessToken } = args;
-  const client = createGraphqlClient({
-    shop,
-    accessToken,
-  });
+  const query = (filesList.loc && filesList.loc.source.body) || '';
+  const client = new Graphql(shop, accessToken, 'admin', '2021-10', 0);
 
-  const result = await client.query(filesList, { first: 10 }).toPromise();
-  console.info('buildCommand end', { ...result });
+  try {
+    const result = await client.request(query, { first: 10 });
+    console.info(`${command} end`, { ...result });
+  } catch (error) {
+    console.info(`${command} error`, { error });
+  }
 };
