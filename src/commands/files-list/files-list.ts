@@ -30,7 +30,13 @@ export const builder: CommandBuilder<unknown, Arguments> = {
 export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
   const { shop, accessToken } = args;
   const query = (filesList.loc && filesList.loc.source.body) || '';
-  const client = new Graphql(shop, accessToken, 'admin', '2021-10', 0);
+  const client = new Graphql({
+    url: `https://${shop}/admin/api/2021-10/graphql.json`,
+    headers: {
+      'X-Shopify-Access-Token': `${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
 
   try {
     const result = await client.request(query, { first: 10 });
