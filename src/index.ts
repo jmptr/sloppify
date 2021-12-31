@@ -1,28 +1,18 @@
-import yargs from "yargs";
-import { buildCommand } from "./commands";
+import yargs from 'yargs';
+import dotenv from 'dotenv';
+import * as buildCommands from './commands/build';
+import * as filesListCommands from './commands/files-list';
+import path from 'path';
+
+dotenv.config({
+  path: path.resolve(__dirname, '..', '.env'),
+});
 
 yargs
-  .scriptName("jute")
-  .usage("$0 <cmd> [args]")
-  .env("SHOPIFY")
-  .command("*", "Default command", () => {
-    console.info("Default command.  Use --help to see all commands");
-  })
-  .command({
-    command: "build",
-    describe: "build something",
-    builder: {
-      shop: {
-        alias: "s",
-        demandOption: true,
-        describe: "Store name",
-      },
-      accessToken: {
-        alias: "t",
-        demandOption: true,
-        describe: "Access Token",
-      },
-    },
-    handler: buildCommand,
-  })
+  .scriptName('sloppify')
+  .usage('$0 <cmd> [args]')
+  .showHelpOnFail(true, 'Specify --help for available options')
+  .command({ ...buildCommands })
+  .command({ ...filesListCommands })
+  .env('SHOPIFY')
   .help().argv;

@@ -1,5 +1,5 @@
-query Firstfiles {
-  files(first: 3) {
+query filesList($first: Int) {
+  files(first: $first) {
     edges {
       node {
         alt
