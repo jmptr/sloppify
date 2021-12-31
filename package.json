@@ -19,15 +19,15 @@
     "test": "jest"
   },
   "dependencies": {
-    "@urql/core": "^2.3.6",
     "cross-fetch": "^3.1.4",
     "dotenv": "^10.0.0",
+    "graphql": "^16.2.0",
     "yargs": "^17.3.1"
   },
   "peerDependencies": {
-    "@urql/core": "^2.3.6",
     "cross-fetch": "^3.1.4",
     "dotenv": "^10.0.0",
+    "graphql": "^16.2.0",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
@@ -36,14 +36,12 @@
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/node": "^17.0.5",
-    "@types/node-fetch": "^3.0.3",
     "@types/yargs": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
     "eslint": "^8.1.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "graphql": "^16.2.0",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.62.0",

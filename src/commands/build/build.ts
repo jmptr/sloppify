@@ -1,10 +1,15 @@
-import { ArgumentsCamelCase } from 'yargs';
+import { ArgumentsCamelCase, CommandBuilder } from 'yargs';
+
+interface Arguments {
+  shop: string;
+  accessToken: string;
+}
 
 export const command = 'build';
 
 export const describe = 'Build something';
 
-export const builder = {
+export const builder: CommandBuilder<unknown, Arguments> = {
   shop: {
     alias: 's',
     demandOption: true,
@@ -17,11 +22,6 @@ export const builder = {
   },
 };
 
-export interface BuildCommandArgs {
-  shop: string;
-  accessToken: string;
-}
-
-export const handler = async (args: ArgumentsCamelCase<BuildCommandArgs>) => {
+export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
   console.info(`${command}`, { args });
 };

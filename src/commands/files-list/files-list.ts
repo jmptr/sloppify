@@ -1,37 +1,41 @@
-import { ArgumentsCamelCase } from 'yargs';
+import { ArgumentsCamelCase, CommandBuilder } from 'yargs';
 
-import { createGraphqlClient } from '../../lib/create-urql-client';
+import Graphql from '../../lib/shopify-graphql';
 import filesList from '../queries/files-list.graphql';
+
+interface Arguments {
+  shop: string;
+  accessToken: string;
+}
 
 export const command = 'files-list';
 
 export const describe = 'List the files';
 
-export const builder = {
+export const builder: CommandBuilder<unknown, Arguments> = {
   shop: {
     alias: 's',
     demandOption: true,
     describe: 'Store name',
+    type: 'string',
   },
   accessToken: {
     alias: 't',
     demandOption: true,
     describe: 'Access Token',
+    type: 'string',
   },
 };
 
-export interface BuildCommandArgs {
-  shop: string;
-  accessToken: string;
-}
-
-export const handler = async (args: ArgumentsCamelCase<BuildCommandArgs>) => {
+export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
   const { shop, accessToken } = args;
-  const client = createGraphqlClient({
-    shop,
-    accessToken,
-  });
+  const query = (filesList.loc && filesList.loc.source.body) || '';
+  const client = new Graphql(shop, accessToken, 'admin', '2021-10', 0);
 
-  const result = await client.query(filesList, { first: 10 }).toPromise();
-  console.info('buildCommand end', { ...result });
+  try {
+    const result = await client.request(query, { first: 10 });
+    console.info(`${command} end`, { ...result });
+  } catch (error) {
+    console.info(`${command} error`, { error });
+  }
 };
