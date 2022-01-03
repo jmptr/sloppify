@@ -1,4 +1,5 @@
 import { ArgumentsCamelCase, CommandBuilder } from 'yargs';
+import { logger } from '../../lib/system';
 
 interface Arguments {
   shop: string;
@@ -23,5 +24,5 @@ export const builder: CommandBuilder<unknown, Arguments> = {
 };
 
 export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
-  console.info(`${command}`, { args });
+  logger.info(`${command}`, { args });
 };

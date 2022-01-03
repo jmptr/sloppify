@@ -1,7 +1,7 @@
 import { ClientError, LeakyBucketError, Variables } from './errors';
 import { Fetcher, RawFetcher } from './fetcher';
 
-interface GraphQLOptions {
+export interface GraphQLOptions {
   fetcher?: Fetcher;
   url: string;
   headers: HeadersInit;

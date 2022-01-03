@@ -1,9 +1,9 @@
 import path from 'path';
 import { ArgumentsCamelCase, CommandBuilder } from 'yargs';
-import fs from 'fs';
 
-import Graphql, { Variables } from '../../lib/shopify-graphql';
-import filesList from '../queries/files-list.graphql';
+import { SystemClient } from '../../lib/system';
+import { ShopifyClient, FilesListGetOptions } from '../../lib/shopify';
+import { logger } from '../../lib/system';
 
 interface Arguments {
   shop: string;
@@ -34,31 +34,13 @@ export const builder: CommandBuilder<unknown, Arguments> = {
   },
 };
 
-const getCacheContents = (filePath: string) => {
-  try {
-    const current = fs.readFileSync(filePath);
-    if (current) {
-      return JSON.parse(current.toString());
-    }
-    return null;
-  } catch (error) {
-    return null;
-  }
-};
-
-const addFileContents = (filePath: string, contents: any[]) => {
-  const content = getCacheContents(filePath) || [];
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify([...content, ...contents], null, 2)
-  );
-};
-
 export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
   const { shop, accessToken, cacheDir } = args;
   const cacheFile = path.join(cacheDir, 'files', 'files.json');
-  const query = (filesList.loc && filesList.loc.source.body) || '';
-  const client = new Graphql({
+  const systemClient = new SystemClient({
+    cacheDir,
+  });
+  const shopifyClient = new ShopifyClient({
     url: `https://${shop}/admin/api/2021-10/graphql.json`,
     headers: {
       'X-Shopify-Access-Token': `${accessToken}`,
@@ -66,28 +48,53 @@ export const handler = async (args: ArgumentsCamelCase<Arguments>) => {
     },
   });
 
-  console.info(`Using cache at: ${cacheFile}`);
-  try {
-    let result = null;
-    const pageSize = 50;
-    let lastKey = null;
-    while (result === null || result.files.pageInfo.hasNextPage) {
-      const variables: Variables =
-        lastKey === null
-          ? { first: pageSize }
-          : { first: pageSize, after: lastKey };
-      result = await client.request(query, variables);
+  logger.info(`Using cache at: ${cacheFile}`);
+  const pageSize = 50;
+  let waitForNext = false;
+  const cacheContent = systemClient.getCacheContents<PageEdge[]>(cacheFile);
+  let cursor: string | null | undefined = cacheContent
+    ? cacheContent[cacheContent.length - 1].cursor
+    : null;
+
+  while (cursor !== undefined) {
+    const variables: FilesListGetOptions =
+      cursor === null
+        ? { first: pageSize }
+        : { first: pageSize, after: cursor };
+
+    try {
+      const result = await shopifyClient.filesListGet(variables);
       const files = result.files.edges;
-      lastKey = files[files.length - 1].cursor;
+      systemClient.addFileContents(cacheFile, files);
+
+      if (result.files.pageInfo.hasNextPage) {
+        cursor = files[files.length - 1].cursor;
+      } else {
+        break;
+      }
+    } catch (error) {
+      const { response } = error as any;
+      if (
+        response &&
+        response.errors &&
+        response.errors.find((e: any) => e.code === 'THROTTLED')
+      ) {
+        logger.error(`${command} LeakyBucket error`);
+        waitForNext = true;
+      } else {
+        logger.error(`${command} error`, { error });
+        break;
+      }
+    }
+
+    if (waitForNext) {
+      logger.info(`${command} waiting.`);
       await new Promise((resolve) => {
-        addFileContents(cacheFile, files);
         setTimeout(() => {
           resolve(true);
         }, 1000);
       });
     }
-    console.info(`${command} end`, { filesList });
-  } catch (error) {
-    console.info(`${command} error`, { error });
   }
+  logger.info(`${command} done`);
 };

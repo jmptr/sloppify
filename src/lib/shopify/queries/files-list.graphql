@@ -1,5 +1,5 @@
-query filesList($first: Int, $after: String) {
-  files(first: $first, after: $after) {
+query filesList($first: Int!, $after: String) {
+  files(first: $first, after: $after, sortKey: CREATED_AT) {
     pageInfo {
       hasNextPage
       hasPreviousPage

@@ -22,12 +22,14 @@
     "cross-fetch": "^3.1.4",
     "dotenv": "^10.0.0",
     "graphql": "^16.2.0",
+    "winston": "^3.3.3",
     "yargs": "^17.3.1"
   },
   "peerDependencies": {
     "cross-fetch": "^3.1.4",
     "dotenv": "^10.0.0",
     "graphql": "^16.2.0",
+    "winston": "^3.3.3",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
