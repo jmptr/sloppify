@@ -34,7 +34,6 @@ class GraphQL {
       variables: variables ? variables : undefined,
     });
 
-    console.info('body', { body });
     const response = await this.fetcher.post(this.url, {
       body,
       headers: this.headers,

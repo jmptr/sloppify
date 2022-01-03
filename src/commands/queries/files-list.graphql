@@ -1,17 +1,24 @@
-query filesList($first: Int) {
-  files(first: $first) {
+query filesList($first: Int, $after: String) {
+  files(first: $first, after: $after) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
     edges {
+      cursor
       node {
         alt
         createdAt
         fileStatus
-        preview {
-          image {
-            altText
-            width
-            height
-          }
-          status
+        ... on GenericFile {
+            url
+            id
+        }
+        ... on MediaImage {
+            id
+            image {
+              originalSrc
+            }
         }
       }
     }
